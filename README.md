@@ -1,2 +1,2 @@
 # G21-RDB
-![ERD Diagram](MSDS691DB.png)
+![ERD Diagram](images/MSDS691DB.png)

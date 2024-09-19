@@ -199,10 +199,12 @@ INSERT INTO g21_schema.individuals_countries (individual_id,country_id)
 SELECT i.individual_id, i.country_id
 FROM individuals AS i
 
-
-
-
-
 /*
 7. Finally query each filled table by writing a SELECT * FROM Table_Name LIMIT 10 . Take screenshots of your query and returned results. Use this templateLinks to an external site. to save your screenshots into a file. Download a .pdf version of the completed file. Please make sure to include a snapshot of your ERD diagram. Feel free to enhance and update your previously submitted ERD diagram.
 */
+
+SELECT * FROM Individuals LIMIT 10;
+SELECT * FROM Country LIMIT 10;
+SELECT * FROM Award LIMIT 10;
+SELECT * FROM Field_of_Expertise LIMIT 10;
+SELECT * FROM Individuals_Countries LIMIT 10;
