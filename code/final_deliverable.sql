@@ -12,7 +12,8 @@ award_freq AS (
     FROM individuals
     GROUP BY award_id
 )
-SELECT a.award_name, af.award_count
+SELECT CASE a.award_name
+    WHEN 'N/A' THEN 'Unknown' ELSE a.award_name END as AwardName, 
+    RANK() OVER (ORDER BY af.award_count ASC) AS MostDifficult
 FROM award_name a
 JOIN award_freq af ON a.award_id = af.award_id
-ORDER BY af.award_count ASC;
