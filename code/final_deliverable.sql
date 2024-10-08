@@ -14,7 +14,12 @@ Metrics Outline:
         is the least frequent among our intelligent individuals.
 3. Is there a particular field of expertise that has a significantly higher count of self taught 
 individuals than the average?:
-         [Metric definition]
+    We investigate this question in two steps: 
+        1. We calculate the total number of individuals in each field who are a) self-taught,
+        or b) classically educated (defined as those who are not self-taught)
+        2. For those two groups (self-taught and classically educated), we calculate the percentage of individuals
+        in each group in each field of expertise.
+
 */
 /*------- Queries ------------*/
 /*
@@ -99,7 +104,6 @@ JOIN award_freq af ON a.award_id = af.award_id
 /*
 3. Is there a particular field of expertise that has a significantly higher count of self taught
 individuals than the average?:
-        [Metric definition]
 
 We investigate this question in two steps: 
     1. We calculate the total number of individuals in each field who are a) self-taught, or b) classically educated (defined as those who are not self-taught)
