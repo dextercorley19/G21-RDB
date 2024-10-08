@@ -100,6 +100,57 @@ JOIN award_freq af ON a.award_id = af.award_id
 3. Is there a particular field of expertise that has a significantly higher count of self taught
 individuals than the average?:
         [Metric definition]
+
+We investigate this question in two steps: 
+    1. We calculate the total number of individuals in each field who are a) self-taught, or b) classically educated (defined as those who are not self-taught)
+    2. For those two groups (self-taught and classically educated), we calculate the percentage of individuals in each group in each field of expertise.
+
+FINDINGS:
+    -- We find that in *every* field of expertise, there are more classically educated individuals represented than self-taught individuals.
+    -- We find that Physics is the only field of expertise where there is a greater proportion of self-educated individuals than classically educated individuals between the two groups.
+    -- We find that the proportions of self-taught and classically educated individuals by field of expertise are very similar, and differ at most by 3% in the case of Physics.
 */
-
-
+-- CTE for self-taught individuals
+WITH self_taught_individuals AS (
+    SELECT * 
+    FROM individuals
+    WHERE education = 'Self-taught'
+-- CTE for classically educated individuals
+), non_self_taught_individuals AS (
+    SELECT * 
+    FROM individuals
+    WHERE education <> 'Self-taught'
+-- CTE for number of self-taught individuals by field of expertise
+), self_taught_by_field AS (
+    SELECT fe.field_of_expertise_id, 
+        MAX(fe.field_name) AS field_name,
+        COUNT(DISTINCT individual_id) AS num_self_taught
+    FROM self_taught_individuals st
+    LEFT JOIN field_of_expertise fe USING(field_of_expertise_id)
+    GROUP BY fe.field_of_expertise_id
+-- CTE for number of classically educated individuals by field of expertise
+), non_self_taught_by_field AS (
+    SELECT fe.field_of_expertise_id, 
+        MAX(fe.field_name) AS field_name,
+        COUNT(DISTINCT individual_id) AS num_not_self_taught
+    FROM non_self_taught_individuals st
+    LEFT JOIN field_of_expertise fe USING(field_of_expertise_id)
+    GROUP BY fe.field_of_expertise_id
+)
+SELECT st.field_of_expertise_id,
+    st.field_name,
+    st.num_self_taught,
+    -- proportion of self-taught individuals in each field of expertise
+    ROUND(st.num_self_taught::NUMERIC / (SELECT SUM(num_self_taught) FROM self_taught_by_field), 2) AS percent_self_taught,
+    nst.num_not_self_taught,
+    -- proportion of classically educated individuals in each field of expertise
+    ROUND(nst.num_not_self_taught::NUMERIC / (SELECT SUM(num_not_self_taught) FROM non_self_taught_by_field), 2) AS percent_not_self_taught,
+    -- bool indicating if a greater proportion of the self-educated individuals studied in a field of expertise than the 
+    -- portion of classically educated individuals in that field
+    CASE
+        WHEN percent_self_taught > percent_not_self_taught THEN 'True'
+        ELSE 'False'
+    END AS higher_proportion_are_self_taught
+FROM self_taught_by_field st
+    JOIN non_self_taught_by_field nst USING(field_of_expertise_id, field_name)
+ORDER BY st.field_of_expertise_id ASC;
